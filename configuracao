@@ -1,0 +1,38 @@
+#Utilizado para inferir a quantidade de testes que serão utilizados. (em média usar 100)
+Quantidade_testes    = 2
+
+#Quantidade de estados é utilizado para inferir quantas simulações serão executadas para cada teste  Cada teste possui 1 estado e será gerado 1 estado simétrico para ele.
+Quantidade_estados   = 1
+
+#Nome do script para inicializar os jobs no cluster
+Nome_Script_Controle = start.sh
+
+#Nome da pasta raiz que serão criadas as subpastas para gerar os testes
+Nome_Dir_Testes	     = Simulacoes
+
+#Configuração dos jogadores que serão utilizados (aceita apenas 2 players por simulação)
+Player0	             = Player 0 GenerationClassForMetric 7
+Player1	             = Player 1 PortfolioGreedySearch 40 NOKDPS 1 0
+
+#Descrição inicial do estado fixo. Basicamente mudar apenas a quantidade de batalhas que serão rodadas.
+StateDescriptor      = State StateDescriptionFile 2 
+
+#Define o quantitativo total de unidades de cada player (ex.:12 = 12 aliadas e 12 inimigas)
+Numero_unidades	     = 12
+
+#A composição do exército que será gerado.
+TiposUnidades        = Protoss_Dragoon,Protoss_Zealot
+
+#configurações utilizadas para o posicionamento dos exercitos
+xLimite              = 128
+yLimite              = 128
+cx1                  = 400
+cy1                  = 360
+cx2                  = 840
+cy2                  = 360
+
+#Nome do arquivo que será utilizado para controlar a execução do script no cluster
+Nome_arq_Controle    = listaArqNaoExecutados.txt
+
+#Limite jobs a ser controlado
+LimitJobs            = 190
