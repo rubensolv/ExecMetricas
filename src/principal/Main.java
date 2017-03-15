@@ -17,7 +17,7 @@ public class Main {
 		System.out.println("Fim Testador ------------------");
 		
 		//testo se o arquivo com a listagem a processar está vazio
-		File arq = new File(System.getProperty("user.dir").concat("/").concat(testador.getNameDirTestes()));
+		File arq = new File(System.getProperty("user.dir").concat("/").concat(testador.getNameDirTestes()).concat("/"+testador.getNomeArqControle()));
 		if(!arq.exists()){ 
 
 			MontadorEstrutura montador = new MontadorEstrutura(testador.getNameDirTestes(), testador);
