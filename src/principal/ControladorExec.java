@@ -1,9 +1,12 @@
 package principal;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -13,6 +16,7 @@ public class ControladorExec {
 	private String pathStruture;
 	private TesteConfig config;
 	private HashSet<String> arqExecutar;
+	private HashSet<String> arqExecutados;
 	private LocalShell shell;
 
 	public ControladorExec( TesteConfig config) {
@@ -20,6 +24,7 @@ public class ControladorExec {
 		this.config = config;
 		this.pathStruture = System.getProperty("user.dir").concat("/").concat(config.getNameDirTestes());
 		arqExecutar = new HashSet<String>();
+		arqExecutados = new HashSet<String>();
 		shell = new LocalShell();
 	}
 	
@@ -29,15 +34,22 @@ public class ControladorExec {
 		lancarJobs();
 	}
 	
+	public void continuarProcessamento(){
+		recuperarListaArquivos();
+		lancarJobs();
+	}
+	
 	private void lancarJobs(){
 		System.out.println("Executando comandos");
 		try {
 			for(String caminho : arqExecutar){
 				while( Integer.valueOf(shell.executeCommand("echo $(qselect -u es91661 | wc -l)").trim()) > config.getLimitJobs() ){
 					System.out.println("Esperando....");
+					gravarListaArquivosExecutar();
 					Thread.sleep(300000);
 				}
 				shell.executeScript(caminho);
+				arqExecutados.add(caminho);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -96,15 +108,40 @@ public class ControladorExec {
 			PrintWriter gravarArq = new PrintWriter(arq);
 			
 			for (String arqExec : arqExecutar) {
-				gravarArq.println(arqExec);
+				if(!arqExecutados.contains(arqExec)){
+					gravarArq.println(arqExec);
+				}
 			}
 			
 			gravarArq.flush();
 			gravarArq.close();
 			arq.close();
 		} catch (IOException e) {
-			System.out.println("Erro ao criar arquivo exp_linux_metrics.txt");
+			System.out.println("Erro ao criar arquivo "+config.getNomeArqControle());
 			e.printStackTrace();
+		}
+	}
+	
+	protected void recuperarListaArquivos(){
+		arqExecutar.clear();
+		arqExecutados.clear();
+		try {
+			FileReader arq = new FileReader(pathStruture.concat("/"+config.getNomeArqControle()));
+			BufferedReader learArq = new BufferedReader(arq);
+			
+			String linha = learArq.readLine();
+			
+			while(linha != null){
+				arqExecutar.add(linha);
+				linha = learArq.readLine();
+			}
+			
+			learArq.close();
+			arq.close();
+			
+		} catch (Exception e) {
+			System.err.printf("Erro na abertura do arquivo: %s.\n",
+			e.getMessage());
 		}
 	}
 	
